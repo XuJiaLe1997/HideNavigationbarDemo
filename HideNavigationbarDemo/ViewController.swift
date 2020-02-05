@@ -16,14 +16,12 @@ class ViewController: UITableViewController {
         tableView.tableFooterView = UIView()
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath.row == 0) {
-            let vc = FirstController()
-            let navVC = UINavigationController(rootViewController: vc)
-            present(navVC, animated: true, completion: nil)
-        } else {
-            performSegue(withIdentifier: "secondSegue", sender: nil)
-        }
-    }
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if (indexPath.row == 0) {
+//            let vc = FirstController()
+//            let navVC = UINavigationController(rootViewController: vc)
+//            present(navVC, animated: true, completion: nil)
+//        }
+//    }
     
 }

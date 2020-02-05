@@ -22,15 +22,19 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
             items.append("night")
         }
         
-        let lbtn = UIBarButtonItem(title: "返回", style: .plain, target: self, action: #selector(back))
-        navigationItem.setLeftBarButton(lbtn, animated: true)
-        let btn = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: nil)
-        navigationItem.setRightBarButton(btn, animated: true)
+        setCustomNavigationBar(.white)
         
-        navigationItem.titleView = titleLabel
+        let mNavigationItem = UINavigationItem()
+        let lbtn = UIBarButtonItem(title: "返回", style: .plain, target: self, action: #selector(back))
+        mNavigationItem.setLeftBarButton(lbtn, animated: true)
+        let rbtn = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: nil)
+        mNavigationItem.setRightBarButton(rbtn, animated: true)
         titleLabel.text = "标题"
         titleLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 30)
         titleLabel.textAlignment = .center
+        mNavigationItem.titleView = titleLabel
+        
+        customNavigationBar?.items = [mNavigationItem]
         
         let navigationBarHeight = (navigationController?.navigationBar.frame.height)!
         tableView.frame = CGRect(x: 0,
@@ -43,8 +47,11 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        setNavBarBackgroundColor(color: .white)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        restoreNavigationBar()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -53,14 +60,13 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         let statusBarHeight = UIApplication.shared.statusBarFrame.height
-        let navigationBarHeight = (navigationController?.navigationBar.frame.height)!
         let maxAlphaOffset = CGFloat(200)
         let minAlphaOffset = CGFloat(0)
-        let offset = scrollView.contentOffset.y + (statusBarHeight + navigationBarHeight)
+        let offset = scrollView.contentOffset.y + statusBarHeight
         let a = max(min((offset - minAlphaOffset) / (maxAlphaOffset - minAlphaOffset), 1), 0)
-        setNavBarBackgroundColorAlpha(alpha: a)
+        setCustomNavigationBarColor(alpha: a)
         titleLabel.textColor = UIColor(red: 1 - a, green: 1 - a, blue: 1 - a, alpha: 1)
-        navigationController?.navigationBar.tintColor = UIColor(red: 1 - a, green: 1 - a, blue: 1 - a, alpha: 1)
+        customNavigationBar!.tintColor = UIColor(red: 1 - a, green: 1 - a, blue: 1 - a, alpha: 1)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -78,7 +84,7 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     @objc func back() {
-        dismiss(animated: true, completion: nil)
+         navigationController?.popViewController(animated: true)
     }
     
 }

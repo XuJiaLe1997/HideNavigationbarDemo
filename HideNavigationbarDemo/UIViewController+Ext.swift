@@ -9,47 +9,84 @@
 import Foundation
 import UIKit
 
-private var navigationBarBackgroundKey = "navigationBarBackgroundKey"
+private var navBarHolderViewKey = "navBarHolderViewKey"
+private var navBarBackgroundViewKey = "navBarBackgroundViewKey"
+private var navBarViewKey = "navBarViewKey"
 
 extension UIViewController {
     
-    func setNavBarBackgroundColor(color: UIColor) {
-        // 不能直接在extension中增加存储属性，所以使用runtime插入属性
-        let backgroundView = objc_getAssociatedObject(self, &navigationBarBackgroundKey) as? UIView
+    fileprivate var navBarHolder: UIView? {
+        set {
+            objc_setAssociatedObject(self, &navBarHolderViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &navBarHolderViewKey) as? UIView
+        }
+    }
+    
+    // 计算属性保存自定义的导航栏
+    var customNavigationBar: UINavigationBar? {
+        set {
+            objc_setAssociatedObject(self, &navBarViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &navBarViewKey) as? UINavigationBar
+        }
+    }
+    
+    // 计算属性保存导航栏背景占位view
+    fileprivate var navBarBackgroundView: UIView? {
+        set {
+            objc_setAssociatedObject(self, &navBarBackgroundViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+        get {
+            return objc_getAssociatedObject(self, &navBarBackgroundViewKey) as? UIView
+        }
+    }
+    
+    func setCustomNavigationBar(_ color: UIColor) {
         
-        if backgroundView == nil {
-            // 导航栏设为透明
-            navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            navigationController?.navigationBar.shadowImage = UIImage()
-            navigationController?.navigationBar.isTranslucent = true
+        if customNavigationBar == nil {
+            // 隐藏导航栏
+            navigationController?.navigationBar.isHidden = true
             
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
             let navigationBarHeight = (navigationController?.navigationBar.frame.height)!
-            // 使用一个占位的view模拟导航栏背景
-            // 修改此view的背景在视觉上等同于修改导航栏的背景
-            let backView = UIView(frame: CGRect(x: 0,
+            
+            navBarHolder = UIView(frame: CGRect(x: 0,
                                                       y: 0, // view是全屏幕的，包括了导航栏和状态栏
                                                       width: view.frame.width,
                                                       height: statusBarHeight + navigationBarHeight))
-            backView.backgroundColor = color
-            backView.isUserInteractionEnabled = false
-            backView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-            backView.layer.borderWidth = 0.3
-            backView.layer.borderColor = UIColor.lightGray.cgColor
-            view.addSubview(backView)
-            objc_setAssociatedObject(self, &navigationBarBackgroundKey, backView, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        } else {
-            backgroundView!.backgroundColor = color
+//            navBarHolder?.isUserInteractionEnabled = true
+            navBarHolder?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+            
+            navBarBackgroundView = UIView(frame: navBarHolder!.frame)
+            navBarBackgroundView?.backgroundColor = color
+            navBarHolder?.addSubview(navBarBackgroundView!)
+            
+            
+            let navBar = UINavigationBar(frame: CGRect(x: 0, y: statusBarHeight, width: view.frame.width, height: navigationBarHeight))
+            navBar.setBackgroundImage(UIImage(), for: .default)
+            navBar.shadowImage = UIImage()
+            navBar.isTranslucent = true
+            navBarHolder?.addSubview(navBar)
+            view.addSubview(navBarHolder!)
+            
+            customNavigationBar = navBar
         }
     }
     
     // 调用此方法修改导航栏透明度
-    func setNavBarBackgroundColorAlpha(alpha:CGFloat) {
-        let backgroundView = objc_getAssociatedObject(self, &navigationBarBackgroundKey) as? UIView
+    func setCustomNavigationBarColor(alpha: CGFloat) {
+        let backgroundView = self.customNavigationBar
         if(backgroundView != nil) {
-            backgroundView?.alpha = alpha
+            navBarBackgroundView?.alpha = alpha
             // 确保处于view的最顶层，防止被覆盖
-            view.bringSubviewToFront(backgroundView!)
+            view.bringSubviewToFront(navBarHolder!)
         }
+    }
+    
+    func restoreNavigationBar() {
+        navigationController?.navigationBar.isHidden = false
     }
 }
