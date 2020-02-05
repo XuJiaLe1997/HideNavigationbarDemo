@@ -2,8 +2,10 @@
 
 ## 效果
 
+<p>
 <img src="https://img-blog.csdnimg.cn/20200204214200446.gif" alt="Sample" width = "200" height="400"/>
 <img src="https://img-blog.csdnimg.cn/20200204214226209.gif" alt="Sample" width = "200" height="400"/>
+</p>
 
 以前的沉浸式做法有很多，比如拿到 `navigationBar` 的 `backgroundImage` 修改透明度，或者往 `navigationBar` 的`view`层加一个占位的视图，修改这个占位视图的透明度在视觉上形成直接修改`navigationBar` 的效果。
 
