@@ -53,17 +53,14 @@ extension UIViewController {
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
             let navigationBarHeight = (navigationController?.navigationBar.frame.height)!
             
-            navBarHolder = UIView(frame: CGRect(x: 0,
-                                                      y: 0, // view是全屏幕的，包括了导航栏和状态栏
-                                                      width: view.frame.width,
-                                                      height: statusBarHeight + navigationBarHeight))
-//            navBarHolder?.isUserInteractionEnabled = true
+            navBarHolder = UIView(frame: CGRect(x: 0, y: 0,
+                                                width: view.frame.width,
+                                                height: statusBarHeight + navigationBarHeight))
             navBarHolder?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
             
             navBarBackgroundView = UIView(frame: navBarHolder!.frame)
             navBarBackgroundView?.backgroundColor = color
             navBarHolder?.addSubview(navBarBackgroundView!)
-            
             
             let navBar = UINavigationBar(frame: CGRect(x: 0, y: statusBarHeight, width: view.frame.width, height: navigationBarHeight))
             navBar.setBackgroundImage(UIImage(), for: .default)
