@@ -49,14 +49,12 @@ extension UIViewController {
         if customNavigationBar == nil {
             // 隐藏导航栏
             navigationController?.navigationBar.isHidden = true
-            
             let statusBarHeight = UIApplication.shared.statusBarFrame.height
             let navigationBarHeight = (navigationController?.navigationBar.frame.height)!
             
             navBarHolder = UIView(frame: CGRect(x: 0, y: 0,
                                                 width: view.frame.width,
                                                 height: statusBarHeight + navigationBarHeight))
-            navBarHolder?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
             
             navBarBackgroundView = UIView(frame: navBarHolder!.frame)
             navBarBackgroundView?.backgroundColor = color
